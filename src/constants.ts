@@ -18,6 +18,11 @@ export const BOX_PLACEMENT_TOLERANCE_PX = BOX_WIDTH * 0.3;
 /** Расстояние в px, на которое сдвигается камера после успешной установки бокса */
 export const CAMERA_STEP_PX = 104;
 
+/** Скорость, с которой рука поднимается вверх */
+export const ANIMATE_HAND_UP_SPEED = 5;
+/** Скорость, с которой рука опускается вниз */
+export const ANIMATE_HAND_DOWN_SPEED = 10;
+
 /** Коэффициент сложности в зависимости от `difficulty` (придет от яндекс лавки) */
 export const TILT_BY_DIFFICULTY = {
 	1: 0.3,

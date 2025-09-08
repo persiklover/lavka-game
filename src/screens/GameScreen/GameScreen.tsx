@@ -16,6 +16,8 @@ import { livesAtom } from '@/state/lives';
 import { scoreAtom } from '@/state/score';
 import { clsx } from '@/utils/clsx';
 import {
+	ANIMATE_HAND_DOWN_SPEED,
+	ANIMATE_HAND_UP_SPEED,
 	BOX_HEIGHT,
 	BOX_PLACEMENT_TOLERANCE_PX,
 	BOX_WIDTH,
@@ -466,7 +468,6 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 			const handleBeforeUpdate = () => {
 				handlePlugins();
 				handleFirstBoxRotation();
-				if (handAnimationTask) handAnimationTask();
 
 				for (const body of world.bodies) {
 					if (body.plugin?.syncRotationWith) {
@@ -683,8 +684,6 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				Matter.World.add(world, [box, joint, hand]);
 			}
 
-			let handAnimationTask: (() => void) | null = null;
-
 			const animateHand = (targetY: number, speed: number, callback?: () => void) => {
 				const update = () => {
 					const delta = deltaRef.current;
@@ -700,19 +699,14 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 							x: handPositionX,
 							y: y + stepSize * direction,
 						});
-						// handAnimationRef.current = requestAnimationFrame(update);
+						handAnimationRef.current = requestAnimationFrame(update);
 					} else {
 						Matter.Body.setPosition(hand, { x: handPositionX, y: targetY });
-						handAnimationTask = null;
 						callback?.();
 					}
 				};
-				handAnimationTask = update;
-				// handAnimationRef.current = requestAnimationFrame(update);
+				handAnimationRef.current = requestAnimationFrame(update);
 			};
-
-			const ANIMATE_HAND_UP_SPEED = 5;
-			const ANIMATE_HAND_DOWN_SPEED = 10;
 
 			function animateHandUp(callback?: () => void) {
 				handMoving = false;
