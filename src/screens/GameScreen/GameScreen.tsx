@@ -152,7 +152,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 			const canvas = canvasRef.current!;
 			const ctx = canvas.getContext('2d') || undefined;
 			if (ctx) {
-				ctx.imageSmoothingEnabled = true;
+				ctx.imageSmoothingEnabled = false;
 				ctx.imageSmoothingQuality = 'high';
 			}
 
