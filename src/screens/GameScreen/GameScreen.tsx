@@ -6,7 +6,6 @@ import Matter, { Body, Constraint, IChamferableBodyDefinition } from 'matter-js'
 import { BagIcon } from './icons/BagIcon';
 import { HeartIcon } from './icons/HeartIcon';
 
-import { preloadImages } from '@/utils/preloadImages';
 import { GameState, gameStateAtom } from '@/state/gameState';
 import { Screen } from '@/layout/Screen';
 import { cameraYAtom, targetCameraYAtom } from '@/state/cameraY';
@@ -30,6 +29,7 @@ import {
 	TILT_BY_DIFFICULTY,
 } from '@/constants';
 import { hasCarouselAtom } from '@/state/hasCarousel';
+import { imagesAtom } from '@/state/images';
 
 function useSyncedRef<T>(value: T) {
 	const ref = useRef(value);
@@ -62,6 +62,8 @@ type Difficulty = keyof typeof TILT_BY_DIFFICULTY;
 
 export const GameScreen = ({ settings }: { settings: Settings }) => {
 	const [gameState, setGameState] = useAtom(gameStateAtom);
+
+	const images = useAtomValue(imagesAtom);
 
 	const [ready, setReady] = useState(false);
 
@@ -139,12 +141,6 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 
 			setTargetCameraY(0);
 
-			// Preload images
-			const [boxImages, handImages] = await Promise.all([
-				preloadImages(['./img/box1.png', './img/box2.png']),
-				preloadImages(['./img/hand-hold.png', './img/hand-release.png']),
-			]);
-
 			const pixelRatio = window.devicePixelRatio || 1;
 			const width = window.innerWidth;
 			const height = window.innerHeight;
@@ -184,6 +180,16 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				},
 			});
 
+			// Add images to cache
+			render.textures = {
+				[images!.house.left.src]: images!.house.left,
+				[images!.house.right.src]: images!.house.right,
+				[images!.hand.hold.src]: images!.hand.hold,
+				[images!.hand.release.src]: images!.hand.release,
+				[images!.box['front'].src]: images!.box['front'],
+				[images!.box['back'].src]: images!.box['back'],
+			};
+
 			const world = engine.world;
 
 			// Create hand
@@ -192,7 +198,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				collisionFilter: { group: -1, mask: 0 },
 				render: {
 					sprite: {
-						texture: handImages[0].src,
+						texture: images!.hand.hold.src,
 						xScale: 1 / IMG_SCALE,
 						yScale: 1 / IMG_SCALE,
 					},
@@ -223,7 +229,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					collisionFilter: { group: -1, mask: 0 },
 					render: {
 						sprite: {
-							texture: './img/house-left.png',
+							texture: images!.house.left.src,
 							xScale: 1 / IMG_SCALE,
 							yScale: 1 / IMG_SCALE,
 						},
@@ -241,7 +247,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					collisionFilter: { group: -1, mask: 0 },
 					render: {
 						sprite: {
-							texture: './img/house-right.png',
+							texture: images!.house.right.src,
 							xScale: 1 / IMG_SCALE,
 							yScale: 1 / IMG_SCALE,
 						},
@@ -565,7 +571,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 
 					if (hand.render.sprite) {
 						// Возвращаем руку в исходное состояние
-						hand.render.sprite.texture = handImages[0].src;
+						hand.render.sprite.texture = images!.hand.hold.src;
 					}
 
 					// сбрасываем x координату руки
@@ -615,7 +621,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 
 			function createBox(x = width / 2, y = cameraYRef.current - 110) {
 				const index = Math.random() > 0.5 ? 1 : 0;
-				const img = boxImages[index];
+				const img = [images!.box['front'], images!.box['back']][index];
 
 				const isSecondBox = index === 1;
 				const manualOffsetPx = isSecondBox ? 10 : 1;
@@ -839,7 +845,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				setDroppedBoxes((count) => count + 1);
 
 				if (hand.render.sprite) {
-					hand.render.sprite.texture = handImages[1].src;
+					hand.render.sprite.texture = images!.hand.release.src;
 				}
 				handMoving = false;
 
