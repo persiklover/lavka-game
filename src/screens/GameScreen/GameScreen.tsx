@@ -285,7 +285,10 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 						if (nextCameraY > targetY) nextCameraY = targetY;
 						if (nextCameraY === 0) {
 							setReady(true);
-							Matter.Body.setPosition(hand, { x: hand.position.x, y: handInitialYPos });
+							Matter.Body.setPosition(hand, {
+								x: hand.position.x,
+								y: handInitialYPos,
+							});
 							grabNewBox({ startOscillation: false });
 						}
 						cameraYCurrent = nextCameraY;
@@ -566,7 +569,10 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					}
 
 					// сбрасываем x координату руки
-					Matter.Body.setPosition(hand, { x: handInitialXPos, y: hand.position.y });
+					Matter.Body.setPosition(hand, {
+						x: handInitialXPos,
+						y: hand.position.y,
+					});
 					Matter.Body.setAngle(hand, 0);
 
 					spawnNewBox();
@@ -710,7 +716,10 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 
 			function animateHandDown(callback?: () => void) {
 				const initialTargetY = cameraYRef.current - 170;
-				Matter.Body.setPosition(hand, { x: hand.position.x, y: initialTargetY });
+				Matter.Body.setPosition(hand, {
+					x: hand.position.x,
+					y: initialTargetY,
+				});
 				const targetY = cameraYRef.current + 50;
 				animateHand(targetY, ANIMATE_HAND_DOWN_SPEED, () => {
 					handMoving = true;
