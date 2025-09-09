@@ -495,6 +495,9 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					setGameState(GameState.WIN);
 				} else setTimeout(freezeWorld, 150);
 				onFinishGame(score, lives);
+				if (!hasCarouselRef.current) {
+					GameBridge.send({ event: 'confirm' });
+				}
 			}
 
 			function onLose(score: number, lives: number) {
@@ -504,6 +507,9 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					setGameState(GameState.LOSE);
 				} else setTimeout(freezeWorld, 150);
 				onFinishGame(score, lives);
+				if (!hasCarouselRef.current) {
+					GameBridge.send({ event: 'confirm' });
+				}
 			}
 
 			function onBoxLandedOnBox() {
@@ -585,6 +591,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					spawnNewBox();
 					animateHandDown(() => {
 						setCanPlaceBoxes(true);
+						canPlaceBoxesRef.current = true;
 						if (startOscillation) {
 							startHandOscillation();
 						}
@@ -822,6 +829,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 			const handleTap = () => {
 				if (isPausedRef.current || !canPlaceBoxesRef.current || !currentJoint) return;
 				setCanPlaceBoxes(false);
+				canPlaceBoxesRef.current = false;
 
 				// Скрываем стартовую подсказку
 				setShowFirstMissMessage(false);
