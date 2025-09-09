@@ -909,7 +909,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				<>
 					<p
 						className={clsx(
-							'absolute left-1/2 top-1/2 -translate-1/2 text-xl w-80 text-center leading-tight font-[400] opacity-0 transition-opacity duration-500 pointer-events-none',
+							'absolute left-1/2 top-1/2 -translate-1/2 text-xl w-80 text-center leading-tight font-medium opacity-0 transition-opacity duration-500 pointer-events-none',
 							droppedBoxes === 0 && canPlaceBoxes && 'opacity-100'
 						)}
 					>
@@ -919,7 +919,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					</p>
 					<p
 						className={clsx(
-							'absolute left-1/2 top-1/2 -translate-1/2 text-xl w-80 text-center leading-tight font-[400] opacity-0 transition-opacity duration-500 pointer-events-none',
+							'absolute left-1/2 top-1/2 -translate-1/2 text-xl w-80 text-center leading-tight font-medium opacity-0 transition-opacity duration-500 pointer-events-none',
 							droppedBoxes === 1 && score === 1 && 'opacity-100'
 						)}
 					>
@@ -931,7 +931,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					</p>
 					<p
 						className={clsx(
-							'absolute left-1/2 top-1/2 -translate-1/2 text-xl w-80 text-center leading-tight font-[400] opacity-0 transition-opacity duration-500 pointer-events-none',
+							'absolute left-1/2 top-1/2 -translate-1/2 text-xl w-80 text-center leading-tight font-medium opacity-0 transition-opacity duration-500 pointer-events-none',
 							showFirstMissMessage && 'opacity-100'
 						)}
 					>

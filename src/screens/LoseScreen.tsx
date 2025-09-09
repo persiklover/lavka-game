@@ -37,7 +37,7 @@ export const LoseScreen = () => {
 		<Screen active={gameState === GameState.LOSE}>
 			<div
 				className={clsx(
-					'fixed left-1/2 top-1/2 -translate-1/2 w-full flex flex-col gap-4 px-8 text-center',
+					'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-full w-full flex flex-col gap-4 px-8 text-center',
 					'opacity-0 transition-opacity duration-500',
 					ready && 'opacity-100'
 				)}

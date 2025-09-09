@@ -20,7 +20,12 @@ export const PrizeCard = forwardRef<HTMLDivElement, PrizeCardProps>(
 				<div className="size-42 flex justify-center items-center">
 					<img className="mb-2 max-w-full max-h-full object-cover" src={imageUrl} alt="Prize" />
 				</div>
-				<p className="mt-auto text-left text-[#21201F] font-medium text-[16px] leading-[17px] tracking-[-0.08px]">
+				<p
+					className="mt-auto text-left text-[#21201F] font-medium text-[16px] leading-[17px] tracking-[-0.08px]"
+					style={{
+						fontVariantNumeric: 'lining-nums proportional-nums',
+					}}
+				>
 					{title}
 				</p>
 			</div>

@@ -134,12 +134,12 @@ export const WinScreen = () => {
 
 				<div
 					className={clsx(
-						'fixed bottom-11 w-full flex flex-col gap-5 pt-20 px-8 pointer-events-none opacity-0 transition-opacity duration-500 delay-1000',
+						'fixed bottom-11 w-full flex flex-col gap-[50px] pt-20 px-8 pointer-events-none opacity-0 transition-opacity duration-500 delay-1000',
 						prizeAnimationFinished && 'opacity-100 pointer-events-auto'
 					)}
 				>
 					{reward && (
-						<p className="w-80 self-center text-center text-xl leading-tight font-[400] pointer-events-none">
+						<p className="w-80 self-center text-center text-[16px] leading-tight font-medium pointer-events-none">
 							Выдадим после доставки,
 							<br />и будет действителен {reward.expired}{' '}
 							{num2word(reward.expired, ['день', 'дня', 'дней'])}

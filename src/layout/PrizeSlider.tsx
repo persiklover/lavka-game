@@ -23,7 +23,7 @@ const MIN_AHEAD_PX = window.innerWidth;
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
 export const PrizeSlider = ({
-	speed = 0.35,
+	speed = 0.525,
 	reward,
 	onStop,
 	onPrizeCardAnimationFinished,

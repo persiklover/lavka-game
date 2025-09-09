@@ -43,7 +43,7 @@ export const MenuScreen = () => {
 
 			<div className="fixed bottom-11 w-full flex flex-col gap-2.5 pt-20 px-8">
 				<Button onClick={onPlayClick}>Играть</Button>
-				<button className="m-2 underline" onClick={onClickRules}>
+				<button className="m-2 font-medium underline" onClick={onClickRules}>
 					Правила игры
 				</button>
 			</div>
