@@ -448,6 +448,10 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				handlePlugins();
 				handleFirstBoxRotation();
 
+				if (currentBox.position.y > render.bounds.max.y && !currentBox.plugin.missed) {
+					handleBoxMiss(currentBox);
+				}
+
 				for (const body of world.bodies) {
 					if (body.plugin?.syncRotationWith) {
 						Matter.Body.setAngle(body, body.plugin.syncRotationWith.angle);
