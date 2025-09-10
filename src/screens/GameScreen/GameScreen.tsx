@@ -30,10 +30,12 @@ import {
 	HAND_OSCILLATION_SPEED,
 	IMG_SCALE,
 	MIN_BOXES_TO_SWING,
+	MS_PER_FRAME,
 	TILT_BY_DIFFICULTY,
 } from '@/constants';
 import { hasCarouselAtom } from '@/state/hasCarousel';
 import { imagesAtom } from '@/state/images';
+import { useDeltaRef } from '@/hooks/useDeltaRef';
 
 function useSyncedRef<T>(value: T) {
 	const ref = useRef(value);
@@ -42,25 +44,6 @@ function useSyncedRef<T>(value: T) {
 	}, [value]);
 	return ref;
 }
-
-const MS_PER_FRAME = 16;
-
-const useDeltaRef = () => {
-	const deltaRef = useRef(MS_PER_FRAME);
-	const lastTimeRef = useRef(0);
-
-	useEffect(() => {
-		const update = (now: number) => {
-			const newDelta = now - (lastTimeRef.current || now);
-			lastTimeRef.current = now;
-			deltaRef.current = Math.max(newDelta, 1);
-			requestAnimationFrame(update);
-		};
-		requestAnimationFrame(update);
-	}, []);
-
-	return deltaRef;
-};
 
 type Difficulty = keyof typeof TILT_BY_DIFFICULTY;
 

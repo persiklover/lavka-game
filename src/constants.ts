@@ -1,3 +1,4 @@
+export const MS_PER_FRAME = 16;
 /** Множитель размера изображений */
 export const IMG_SCALE = 6;
 /** Ширина коллизии бокса */

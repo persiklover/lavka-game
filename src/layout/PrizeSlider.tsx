@@ -16,14 +16,18 @@ interface PrizeSliderProps {
 type Mode = 'RUN' | 'DECEL' | 'STOP';
 
 const GAP = 8; // соответствует className="gap-2"
-const DECEL_DURATION_MS = 3_500;
-const MIN_AHEAD_PX = window.innerWidth;
+const DECEL_DURATION_MS = 2_500;
+const MIN_AHEAD_PX = window.innerWidth * 0.75;
 
 // плавное замедление
-const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+const easeOutCubic = (t: number) => {
+	const c1 = 1.70158;
+	const c3 = c1 + 1;
+	return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+};
 
 export const PrizeSlider = ({
-	speed = 0.525,
+	speed = 0.35,
 	reward,
 	onStop,
 	onPrizeCardAnimationFinished,
@@ -156,17 +160,29 @@ export const PrizeSlider = ({
 		// Ищем ближайшую цель впереди по направлению движения
 		for (const card of targetCards) {
 			const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+
+			// Вычисляем базовую цель для центрирования
 			let target = containerCenter - cardCenter;
 
-			// Корректируем цель чтобы она была впереди
-			while (target > currentX) {
-				target -= cycleWidth;
-			}
+			// Корректируем цель чтобы она была впереди (target < currentX)
+			// и обеспечиваем минимальную дистанцию
+			const adjustTargetForDistance = () => {
+				// Сначала гарантируем, что цель впереди
+				while (target >= currentX) {
+					target -= cycleWidth;
+				}
 
-			// Добавляем дополнительный цикл если нужно обеспечить минимальную дистанцию
-			if (currentX - target < MIN_AHEAD_PX) {
-				target -= cycleWidth;
-			}
+				// Затем гарантируем минимальную дистанцию
+				while (currentX - target < MIN_AHEAD_PX) {
+					target -= cycleWidth;
+					// После добавления цикла проверяем, не ушли ли мы снова вперед
+					if (target >= currentX) {
+						target -= cycleWidth;
+					}
+				}
+			};
+
+			adjustTargetForDistance();
 
 			const distance = currentX - target;
 
