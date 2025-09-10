@@ -491,6 +491,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 			function onWin(score: number, lives: number) {
 				Matter.World.remove(world, hand, true);
 				setCanPlaceBoxes(false);
+				canPlaceBoxesRef.current = false;
 				if (hasCarouselRef.current) {
 					setGameState(GameState.WIN);
 				} else setTimeout(freezeWorld, 150);
@@ -503,6 +504,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 			function onLose(score: number, lives: number) {
 				Matter.World.remove(world, hand, true);
 				setCanPlaceBoxes(false);
+				canPlaceBoxesRef.current = false;
 				if (hasCarouselRef.current) {
 					setGameState(GameState.LOSE);
 				} else setTimeout(freezeWorld, 150);
@@ -590,7 +592,8 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					});
 					Matter.Body.setAngle(hand, 0);
 
-					spawnNewBox();
+					const box = spawnNewBox();
+					if (!box) return;
 					animateHandDown(() => {
 						setCanPlaceBoxes(true);
 						canPlaceBoxesRef.current = true;
@@ -629,7 +632,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				Matter.Body.setAngularVelocity(currentBox, 0.0215 * (dx > 0 ? 1 : -1));
 			}
 
-			function createBox(x = width / 2, y = cameraYRef.current - 110) {
+			function createBox(x = width / 2, y = cameraYRef.current - 110): Matter.Body {
 				const index = Math.random() > 0.5 ? 1 : 0;
 				const img = [images!.box['front'], images!.box['back']][index];
 
@@ -641,9 +644,9 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 
 				const boxOptions: IChamferableBodyDefinition = {
 					label: 'box',
-					mass: 1, // Четко заданная масса
-					friction: 0.3, // Умеренное трение
-					frictionStatic: 0.5, // Статическое трение
+					mass: 1,
+					friction: 0.3,
+					frictionStatic: 0.5,
 					// inertia: Infinity,
 					collisionFilter: {
 						group: lastCollisionGroup,
@@ -667,7 +670,9 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				return box;
 			}
 
-			function spawnNewBox() {
+			function spawnNewBox(): Matter.Body | null {
+				if (currentJoint != null) return null;
+
 				boxHasLanded = false;
 
 				const box = createBox();
@@ -691,9 +696,13 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 
 				// Добавляем руку в конец, чтобы имитировать высокий z-index
 				Matter.World.add(world, [box, joint, hand]);
+
+				return box;
 			}
 
 			const animateHand = (targetY: number, speed: number, callback?: () => void) => {
+				if (handAnimationRef.current) return;
+
 				const update = () => {
 					const delta = deltaRef.current;
 
@@ -710,6 +719,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 						});
 						handAnimationRef.current = requestAnimationFrame(update);
 					} else {
+						handAnimationRef.current = undefined;
 						Matter.Body.setPosition(hand, { x: handPositionX, y: targetY });
 						callback?.();
 					}
