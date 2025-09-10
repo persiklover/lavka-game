@@ -134,7 +134,7 @@ export const WinScreen = () => {
 
 				<div
 					className={clsx(
-						'fixed bottom-11 w-full flex flex-col gap-[50px] pt-20 px-8 pointer-events-none opacity-0 transition-opacity duration-500 delay-1000',
+						'fixed bottom-11 w-full flex flex-col gap-[5.5dvh] px-8 pointer-events-none opacity-0 transition-opacity duration-500 delay-1000',
 						prizeAnimationFinished && 'opacity-100 pointer-events-auto'
 					)}
 				>
