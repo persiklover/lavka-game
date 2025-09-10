@@ -143,8 +143,6 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 
 			let handOscillating = false;
 
-			setTargetCameraY(0);
-
 			const pixelRatio = window.devicePixelRatio || 1;
 			const width = window.innerWidth;
 			const height = window.innerHeight;
@@ -192,6 +190,8 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				[images!.box['front'].src]: images!.box['front'],
 				[images!.box['back'].src]: images!.box['back'],
 			};
+
+			setTargetCameraY(0);
 
 			const world = engine.world;
 
@@ -285,10 +285,8 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				}
 
 				let cameraYCurrent = cameraYRef.current;
-				let hasChanged = false;
 
 				if (currentY < targetY) {
-					hasChanged = true;
 					setCameraY((currentCameraY) => {
 						let nextCameraY = currentCameraY + cameraSpeed * (delta / MS_PER_FRAME);
 						if (nextCameraY > targetY) nextCameraY = targetY;
@@ -304,7 +302,6 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 						return nextCameraY;
 					});
 				} else if (currentY > targetY) {
-					hasChanged = true;
 					setCameraY((currentCameraY) => {
 						let nextCameraY = currentCameraY - cameraSpeed * (delta / MS_PER_FRAME);
 						// Гарантируем, что не опустимся ниже target
@@ -317,20 +314,18 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					});
 				}
 
-				if (hasChanged) {
-					render.bounds.min.y = cameraYCurrent;
-					render.bounds.max.y = cameraYCurrent + height;
+				render.bounds.min.y = cameraYCurrent;
+				render.bounds.max.y = cameraYCurrent + height;
 
-					const scale = render.options.pixelRatio || 1;
-					render.context.setTransform(
-						scale,
-						0,
-						0,
-						scale,
-						-render.bounds.min.x * scale,
-						-render.bounds.min.y * scale
-					);
-				}
+				const scale = render.options.pixelRatio || 1;
+				render.context.setTransform(
+					scale,
+					0,
+					0,
+					scale,
+					-render.bounds.min.x * scale,
+					-render.bounds.min.y * scale
+				);
 
 				cameraAnimationFrameRef.current = requestAnimationFrame(updateCamera);
 			}
