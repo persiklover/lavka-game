@@ -139,7 +139,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 			let currentJoint: Constraint | null;
 			let boxHasLanded = false;
 
-			let handMoving = false;
+			let handOscillating = false;
 
 			setTargetCameraY(0);
 
@@ -297,7 +297,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 								x: hand.position.x,
 								y: handInitialYPos,
 							});
-							grabNewBox({ startOscillation: false });
+							deployNewBox({ startOscillation: false });
 						}
 						cameraYCurrent = nextCameraY;
 						return nextCameraY;
@@ -309,7 +309,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 						// Гарантируем, что не опустимся ниже target
 						if (nextCameraY < targetY) nextCameraY = targetY;
 						if (nextCameraY === targetY) {
-							grabNewBox({ delay: 0 });
+							deployNewBox({ delay: 0 });
 						}
 						cameraYCurrent = nextCameraY;
 						return nextCameraY;
@@ -384,7 +384,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 							Matter.Body.setInertia(currentBox, Infinity);
 							Matter.Sleeping.set(firstBox, true);
 
-							grabNewBox({ delay: 1_000 });
+							deployNewBox({ delay: 1_000 });
 						} else if (bodyA.id !== firstBox?.id && bodyB.id !== firstBox?.id) {
 							// Обработка промаха
 							handleBoxMiss(currentBox);
@@ -570,7 +570,9 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				}
 			}
 
-			function grabNewBox(options?: { delay?: number; startOscillation?: boolean }) {
+			function deployNewBox(options?: { delay?: number; startOscillation?: boolean }) {
+				if (currentJoint != null) return;
+
 				const { delay = 500, startOscillation = true } = options || {};
 				setTimeout(() => {
 					if (livesRef.current <= 0) return;
@@ -610,7 +612,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					if (nextLives <= 0) {
 						onLose(scoreRef.current, nextLives);
 					} else {
-						grabNewBox({ delay: 1_500 });
+						deployNewBox({ delay: 1_500 });
 					}
 					return nextLives;
 				});
@@ -716,7 +718,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 			};
 
 			function animateHandUp(callback?: () => void) {
-				handMoving = false;
+				handOscillating = false;
 				const targetY = cameraYRef.current - 170;
 				animateHand(targetY, ANIMATE_HAND_UP_SPEED, callback);
 			}
@@ -729,13 +731,13 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				});
 				const targetY = cameraYRef.current + 50;
 				animateHand(targetY, ANIMATE_HAND_DOWN_SPEED, () => {
-					handMoving = true;
+					handOscillating = true;
 					callback?.();
 				});
 			}
 
 			function startHandOscillation() {
-				if (!handMoving || isPausedRef.current) return;
+				if (!handOscillating || isPausedRef.current) return;
 
 				const baseX = hand.position.x;
 				const swingOriginY = hand.position.y - 60;
@@ -748,7 +750,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				let angle = 0;
 
 				function update() {
-					if (!handMoving) return;
+					if (!handOscillating) return;
 
 					const delta = deltaRef.current;
 
@@ -791,7 +793,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				Matter.Runner.stop(runner);
 
 				// Останавливаем анимацию руки
-				handMoving = false;
+				handOscillating = false;
 			};
 
 			const unfreezeWorld = () => {
@@ -811,7 +813,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				Matter.Runner.run(runner, engine);
 
 				// Возобновляем анимацию руки
-				handMoving = true;
+				handOscillating = true;
 				const shouldOscillate = scoreRef.current >= 1;
 				if (shouldOscillate) startHandOscillation();
 			};
@@ -827,7 +829,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 			};
 
 			const handleTap = () => {
-				if (isPausedRef.current || !canPlaceBoxesRef.current || !currentJoint) return;
+				if (!canPlaceBoxesRef.current || !currentJoint || isPausedRef.current) return;
 				setCanPlaceBoxes(false);
 				canPlaceBoxesRef.current = false;
 
@@ -849,7 +851,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				if (hand.render.sprite) {
 					hand.render.sprite.texture = images!.hand.release.src;
 				}
-				handMoving = false;
+				handOscillating = false;
 
 				animateHandUp();
 			};
@@ -873,7 +875,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				canvas.removeEventListener('pointerdown', handleTap);
 				// Matter.Events.off(engine, 'collisionStart', handleCollisionStart);
 				// Matter.Events.off(engine, 'beforeUpdate', handleBeforeUpdate);
-				handMoving = false;
+				handOscillating = false;
 				removeOnMessageListener();
 				// Matter.Engine.clear(engine);
 				// Matter.Render.stop(render);
