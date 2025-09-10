@@ -4,6 +4,11 @@ export const IMG_SCALE = 6;
 export const BOX_WIDTH = 110;
 /** Высота коллизии бокса */
 export const BOX_HEIGHT = 104;
+/** Сила, с которой бокс отскакивает в случае промаха */
+export const BOX_DROP_FORCE = 12;
+/** Сила, с которой бокс отскакивает в случае промаха */
+export const BOX_MISS_BOUNCE_FORCE = 0.05;
+/** Высота земли в px */
 export const GROUND_HEIGHT = 60;
 /** Кол-во боксов для начала раскачки башни */
 export const MIN_BOXES_TO_SWING = 2;

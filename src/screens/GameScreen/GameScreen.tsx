@@ -18,7 +18,9 @@ import { clsx } from '@/utils/clsx';
 import {
 	ANIMATE_HAND_DOWN_SPEED,
 	ANIMATE_HAND_UP_SPEED,
+	BOX_DROP_FORCE,
 	BOX_HEIGHT,
+	BOX_MISS_BOUNCE_FORCE,
 	BOX_PLACEMENT_TOLERANCE_PX,
 	BOX_WIDTH,
 	CAMERA_STEP_PX,
@@ -165,7 +167,6 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				timing: {
 					lastDelta: deltaRef.current,
 				},
-				gravity: { y: 4 },
 			});
 			const render = Matter.Render.create({
 				canvas,
@@ -628,8 +629,11 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 
 				currentBox.collisionFilter = { group: -1 };
 
+				// Отскок
+				Matter.Body.setVelocity(currentBox, { x: 0, y: BOX_MISS_BOUNCE_FORCE });
+
 				// Даем легкий поворот для эффекта соскальзывания
-				Matter.Body.setAngularVelocity(currentBox, 0.0215 * (dx > 0 ? 1 : -1));
+				Matter.Body.setAngularVelocity(currentBox, 0.0125 * (dx > 0 ? 1 : -1));
 			}
 
 			function createBox(x = width / 2, y = cameraYRef.current - 110): Matter.Body {
@@ -851,7 +855,7 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 
 				// Полный сброс всех движений
 				Matter.Body.setAngle(currentBox, 0);
-				Matter.Body.setVelocity(currentBox, { x: 0, y: 0 });
+				Matter.Body.setVelocity(currentBox, { x: 0, y: BOX_DROP_FORCE });
 
 				// Замораживаем поворот (будет разморожен позже)
 				currentBox.plugin.freezeRotation = true;
