@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 
 import { clsx } from '@/utils/clsx';
 
+const SIZE_MULTIPLIER = 2;
+const SPEED_MULTIPLIER = 1.5;
+
 interface ConfettiProps {
 	count?: number;
 	duration?: number; // ms
@@ -23,7 +26,7 @@ export const Confetti = ({ count = 60, duration = 5000, onComplete }: ConfettiPr
 		const pieces = Array.from({ length: count }, () => ({
 			x: Math.random() * width,
 			y: Math.random() * -height, // начинаем сверху
-			r: Math.random() * 6 + 4,
+			r: (Math.random() * 6 + 4) * SIZE_MULTIPLIER,
 			dx: Math.random() * 2 - 1,
 			dy: Math.random() * 2 + 2,
 			rotation: Math.random() * 360,
@@ -47,9 +50,9 @@ export const Confetti = ({ count = 60, duration = 5000, onComplete }: ConfettiPr
 
 		function update() {
 			for (const p of pieces) {
-				p.y += p.dy;
-				p.x += p.dx;
-				p.rotation += 5;
+				p.y += p.dy * SPEED_MULTIPLIER;
+				p.x += p.dx * SPEED_MULTIPLIER;
+				p.rotation += 5 * SPEED_MULTIPLIER;
 			}
 		}
 
