@@ -125,7 +125,7 @@ export const WinScreen = () => {
 					)}
 				>
 					<PrizeSlider
-						speed={27.5}
+						speed={30.5}
 						reward={reward}
 						onPrizeCardAnimationFinished={onPrizeCardAnimationFinished}
 					/>

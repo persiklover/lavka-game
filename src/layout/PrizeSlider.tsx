@@ -17,7 +17,7 @@ type Mode = 'RUN' | 'DECEL' | 'STOP';
 
 const GAP = 8; // соответствует className="gap-2"
 const DECEL_DURATION_MS = 2_500;
-const MIN_AHEAD_PX = window.innerWidth * 0.75;
+const MIN_AHEAD_PX = window.innerWidth;
 
 // плавное замедление
 const easeOutCubic = (t: number) => {
@@ -164,25 +164,20 @@ export const PrizeSlider = ({
 			// Вычисляем базовую цель для центрирования
 			let target = containerCenter - cardCenter;
 
-			// Корректируем цель чтобы она была впереди (target < currentX)
-			// и обеспечиваем минимальную дистанцию
-			const adjustTargetForDistance = () => {
-				// Сначала гарантируем, что цель впереди
-				while (target >= currentX) {
-					target -= cycleWidth;
-				}
+			// Вычисляем необходимое количество циклов
+			let cycles = 0;
 
-				// Затем гарантируем минимальную дистанцию
-				while (currentX - target < MIN_AHEAD_PX) {
-					target -= cycleWidth;
-					// После добавления цикла проверяем, не ушли ли мы снова вперед
-					if (target >= currentX) {
-						target -= cycleWidth;
-					}
-				}
-			};
+			// Если цель позади или слишком близко, добавляем циклы
+			if (target >= currentX || currentX - target < MIN_AHEAD_PX) {
+				const requiredDistance =
+					target >= currentX
+						? target - currentX + MIN_AHEAD_PX
+						: MIN_AHEAD_PX - (currentX - target);
 
-			adjustTargetForDistance();
+				cycles = Math.ceil(requiredDistance / cycleWidth);
+			}
+
+			target -= cycles * cycleWidth;
 
 			const distance = currentX - target;
 
@@ -195,7 +190,8 @@ export const PrizeSlider = ({
 
 		// Фолбэк: если не нашли цель впереди, берем первую доступную
 		if (bestTarget === null) {
-			const cardCenter = targetCards[0].offsetLeft + targetCards[0].offsetWidth / 2;
+			const firstTargetCard = targetCards[0];
+			const cardCenter = firstTargetCard.offsetLeft + firstTargetCard.offsetWidth / 2;
 			bestTarget = containerCenter - cardCenter - cycleWidth;
 		}
 
