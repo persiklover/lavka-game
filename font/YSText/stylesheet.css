@@ -1,0 +1,41 @@
+@font-face {
+	font-family: 'YS Text';
+	src: local('YS Text Black'), local('YSText-Black'),
+		url('YSText-Black.woff2') format('woff2'),
+		url('YSText-Black.woff') format('woff');
+	font-weight: 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'YS Text';
+	src: local('YS Text Bold'), local('YSText-Bold'),
+		url('YSText-Bold.woff2') format('woff2'),
+		url('YSText-Bold.woff') format('woff');
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
+}
+
+
+
+@font-face {
+	font-family: 'YS Text';
+	src: local('YS Text Medium'), local('YSText-Medium'),
+		url('YSText-Medium.woff2') format('woff2'),
+		url('YSText-Medium.woff') format('woff');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'YS Text';
+	src: local('YS Text Regular'), local('YSText-Regular'),
+		url('YSText-Regular.woff2') format('woff2'),
+		url('YSText-Regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
