@@ -12,7 +12,7 @@ export const BOX_MISS_BOUNCE_FORCE = 0.05;
 /** Высота земли в px */
 export const GROUND_HEIGHT = 60;
 /** Кол-во боксов для начала раскачки башни */
-export const MIN_BOXES_TO_SWING = 2;
+export const MIN_BOXES_TO_SWING = 3;
 /** Скорость раскачки руки */
 export const HAND_OSCILLATION_SPEED = 0.005;
 /** Угол в радианах, на который поворачивается рука */
