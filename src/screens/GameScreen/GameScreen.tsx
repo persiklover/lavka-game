@@ -326,7 +326,18 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 						!boxHasLanded
 					) {
 						boxHasLanded = true;
-						onBoxLandedOnBox();
+
+						const placedBoxes = world.bodies.filter(
+							(b) => b.label === 'box' && b.id !== currentBox.id
+						);
+						const lastPlacedBox = placedBoxes[placedBoxes.length - 1];
+
+						const collidedWith = bodyA.id === currentBox.id ? bodyB : bodyA;
+						if (collidedWith.id === lastPlacedBox.id) {
+							onBoxLandedOnBox(currentBox, collidedWith);
+						} else {
+							handleBoxMiss(currentBox);
+						}
 					} else if (labels.includes('box') && labels.includes('ground')) {
 						if (isFirstBox) {
 							isFirstBox = false;
@@ -448,7 +459,11 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				handlePlugins();
 				handleFirstBoxRotation();
 
-				if (currentBox.position.y > render.bounds.max.y && !currentBox.plugin.missed) {
+				if (
+					currentBox &&
+					currentBox.position.y > render.bounds.max.y &&
+					!currentBox.plugin.missed
+				) {
 					handleBoxMiss(currentBox);
 				}
 
@@ -497,61 +512,55 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 				}
 			}
 
-			function onBoxLandedOnBox() {
-				// Поиск предыдущего бокса (предпоследнего в мире с label === 'box')
-				const allBoxes = world.bodies.filter((b) => b.label === 'box' && b.id !== currentBox.id);
-				const lastBox = allBoxes[allBoxes.length - 1];
+			function onBoxLandedOnBox(currentBox: Matter.Body, lastBox: Matter.Body) {
+				const dx = currentBox.position.x - lastBox.position.x;
+				if (Math.abs(dx) > BOX_PLACEMENT_TOLERANCE_PX) {
+					// Обработка промаха
+					handleBoxMiss(currentBox, dx);
+				} else {
+					lastCollisionGroup++;
+					currentBox.collisionFilter = { group: lastCollisionGroup };
 
-				if (lastBox) {
-					const dx = currentBox.position.x - lastBox.position.x;
-					if (Math.abs(dx) > BOX_PLACEMENT_TOLERANCE_PX) {
-						// Обработка промаха
-						handleBoxMiss(currentBox, dx);
-					} else {
-						lastCollisionGroup++;
-						currentBox.collisionFilter = { group: lastCollisionGroup };
+					currentBox.plugin.freezeRotation = false;
+					Matter.Body.setInertia(currentBox, Infinity);
+					Matter.Sleeping.set(currentBox, true);
 
-						currentBox.plugin.freezeRotation = false;
-						Matter.Body.setInertia(currentBox, Infinity);
-						Matter.Sleeping.set(currentBox, true);
+					// Жестко устанавливаем позицию блока точно над предыдущим
+					const offsetY = BOX_HEIGHT - 1; // -1 для плотной посадки без коллизии
+					const exactX = currentBox.position.x;
+					const exactY = lastBox.position.y - offsetY;
+					Matter.Body.setPosition(currentBox, { x: exactX, y: exactY });
+					Matter.Body.setVelocity(currentBox, { x: 0, y: 0 });
 
-						// Жестко устанавливаем позицию блока точно над предыдущим
-						const offsetY = BOX_HEIGHT - 1; // -1 для плотной посадки без коллизии
-						const exactX = currentBox.position.x;
-						const exactY = lastBox.position.y - offsetY;
-						Matter.Body.setPosition(currentBox, { x: exactX, y: exactY });
-						Matter.Body.setVelocity(currentBox, { x: 0, y: 0 });
+					Matter.Body.setAngle(currentBox, lastBox.angle);
+					Matter.Body.setAngularVelocity(currentBox, 0);
+					// Добавляем синхронизацию поворота через плагин
+					currentBox.plugin.syncRotationWith = lastBox;
 
-						Matter.Body.setAngle(currentBox, lastBox.angle);
-						Matter.Body.setAngularVelocity(currentBox, 0);
-						// Добавляем синхронизацию поворота через плагин
-						currentBox.plugin.syncRotationWith = lastBox;
+					// Успешная установка - создаем соединение
+					const constraint = Matter.Constraint.create({
+						bodyA: lastBox,
+						bodyB: currentBox,
+						pointA: {
+							x: currentBox.position.x - lastBox.position.x,
+							y: currentBox.position.y - lastBox.position.y - 1,
+						},
+						pointB: { x: 0, y: 0 },
+						stiffness: 1,
+						length: 0,
+						render: { visible: import.meta.env.DEV },
+					});
+					Matter.World.add(world, constraint);
 
-						// Успешная установка - создаем соединение
-						const constraint = Matter.Constraint.create({
-							bodyA: lastBox,
-							bodyB: currentBox,
-							pointA: {
-								x: currentBox.position.x - lastBox.position.x,
-								y: currentBox.position.y - lastBox.position.y - 1,
-							},
-							pointB: { x: 0, y: 0 },
-							stiffness: 1,
-							length: 0,
-							render: { visible: import.meta.env.DEV },
-						});
-						Matter.World.add(world, constraint);
-
-						setScore((score) => {
-							const nextScore = score + 1;
-							if (nextScore === settings.points) {
-								onWin(nextScore, livesRef.current);
-							} else {
-								setTargetCameraY((y) => y - CAMERA_STEP_PX + scoreRef.current * 0.2);
-							}
-							return nextScore;
-						});
-					}
+					setScore((score) => {
+						const nextScore = score + 1;
+						if (nextScore === settings.points) {
+							onWin(nextScore, livesRef.current);
+						} else {
+							setTargetCameraY((y) => y - CAMERA_STEP_PX + scoreRef.current * 0.2);
+						}
+						return nextScore;
+					});
 				}
 			}
 
