@@ -68,7 +68,7 @@ export const PauseScreen = () => {
 
 	return (
 		<Screen active={isPaused && gameState === GameState.GAME}>
-			<div className={'fixed bottom-11 w-full flex flex-col gap-2.5 pt-20 px-8'}>
+			<div className={'fixed bottom-[5dvh] w-full flex flex-col gap-2.5 pt-20 px-8'}>
 				<div className="fixed inset-0 bg-[#B2F1FF] opacity-50"></div>
 				<Button className="z-1" onClick={handleResume}>
 					Продолжить

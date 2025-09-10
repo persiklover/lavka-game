@@ -92,7 +92,6 @@ export const WinScreen = () => {
 
 	const onPrizeCardAnimationFinished = useCallback(() => {
 		if (prizeAnimationFinished) return;
-		console.log('onPrizeCardAnimationFinished');
 		GameBridge.send({ event: 'view-reward' });
 		setPrizeAnimationFinished(true);
 	}, [prizeAnimationFinished]);
@@ -134,7 +133,7 @@ export const WinScreen = () => {
 
 				<div
 					className={clsx(
-						'fixed bottom-11 w-full flex flex-col gap-[5.5dvh] px-8 pointer-events-none opacity-0 transition-opacity duration-500 delay-1000',
+						'fixed bottom-[5dvh] w-full flex flex-col gap-[5.5dvh] px-8 pointer-events-none opacity-0 transition-opacity duration-500 delay-1000',
 						prizeAnimationFinished && 'opacity-100 pointer-events-auto'
 					)}
 				>

@@ -55,7 +55,7 @@ export const LoseScreen = () => {
 
 			<div
 				className={clsx(
-					'fixed bottom-11 w-full flex flex-col gap-2.5 pt-20 px-8',
+					'fixed bottom-[5dvh] w-full flex flex-col gap-2.5 pt-20 px-8',
 					'opacity-0 transition-opacity duration-500 delay-700',
 					ready && 'opacity-100'
 				)}
