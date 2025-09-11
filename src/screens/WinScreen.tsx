@@ -12,6 +12,7 @@ import { Button } from '@/ui/Button';
 import { targetCameraYAtom } from '@/state/cameraY';
 import { clsx } from '@/utils/clsx';
 import { useSyncedRef } from '@/hooks/useSyncedRef';
+import { hasCarouselAtom } from '@/state/hasCarousel';
 
 export function num2word(value: number, words: string[]) {
 	value = Math.abs(value) % 100;
@@ -25,6 +26,8 @@ export function num2word(value: number, words: string[]) {
 export const WinScreen = () => {
 	const gameState = useAtomValue(gameStateAtom);
 	const [reward, setReward] = useAtom(rewardAtom);
+
+	const hasCarousel = useAtomValue(hasCarouselAtom);
 
 	const [ready, setReady] = useState(false);
 	const hasRunOnceRef = useRef(false);
@@ -88,7 +91,10 @@ export const WinScreen = () => {
 
 	const onConfettiAnimationFinished = useCallback(() => {
 		setConfettiAnimationFinished(true);
-	}, []);
+		if (!hasCarousel) {
+			GameBridge.send({ event: 'confirm' });
+		}
+	}, [hasCarousel]);
 
 	const onPrizeCardAnimationFinished = useCallback(() => {
 		if (prizeAnimationFinished) return;

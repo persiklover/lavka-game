@@ -484,6 +484,9 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 						attempts: lives, // livesRef.current, // остаток жизней
 					},
 				});
+				if (!hasCarouselRef.current) {
+					GameBridge.send({ event: 'confirm' });
+				}
 			}
 
 			function onWin(score: number, lives: number) {
@@ -494,9 +497,6 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					setGameState(GameState.WIN);
 				} else setTimeout(freezeWorld, 150);
 				onFinishGame(score, lives);
-				if (!hasCarouselRef.current) {
-					GameBridge.send({ event: 'confirm' });
-				}
 			}
 
 			function onLose(score: number, lives: number) {
@@ -507,9 +507,6 @@ export const GameScreen = ({ settings }: { settings: Settings }) => {
 					setGameState(GameState.LOSE);
 				} else setTimeout(freezeWorld, 150);
 				onFinishGame(score, lives);
-				if (!hasCarouselRef.current) {
-					GameBridge.send({ event: 'confirm' });
-				}
 			}
 
 			function onBoxLandedOnBox(currentBox: Matter.Body, lastBox: Matter.Body) {
